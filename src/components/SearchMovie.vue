@@ -8,14 +8,15 @@ const movieStore = useMovieStore();
 const router = useRouter();
 const title = ref("");
 
-const searchMovies = () => {
-  movieStore.fetchMovies(`&s=${title.value}`);
-};
-
 const resetMovies = () => {
   title.value = "";
   movieStore.$reset();
   router.push("/");
+};
+const searchMovies = async () => {
+  const searchTitle = title.value;
+  resetMovies();
+  movieStore.fetchMovies(`&s=${searchTitle}`);
 };
 </script>
 
