@@ -25,3 +25,5 @@ dist-ssr
 
 .vercel
 .env
+
+.src/utils/private_api_keys.ts
