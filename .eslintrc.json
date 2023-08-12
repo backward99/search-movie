@@ -1,0 +1,25 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:vue/vue3-recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  },
+  "ignorePatterns": ["**/*.html"],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "semi": true,
+        "singleQuote": false,
+        "endOfLine": "auto",
+        "trailingComma": "es5",
+        "singleAttributePerLine": true,
+        "bracketSameLine": true
+      }
+    ]
+  }
+}
