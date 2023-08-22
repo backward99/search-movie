@@ -9,8 +9,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": {
-        target: "http://localhost:3000",
+      "/api/movies": {
+        target: "http://localhost:2999",
       },
     },
   },
