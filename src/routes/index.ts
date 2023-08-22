@@ -1,17 +1,22 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import MainPage from "~/routes/MainPage.vue";
-import DetailPage from "./DetailPage.vue";
+import { MovieDetail } from "~/components";
+import { MainPage } from "~/pages";
 
 export default createRouter({
   history: createWebHashHistory(),
   routes: [
+    { path: "/", name: "Home", component: MainPage },
     {
-      path: "/",
+      path: "/:title",
+      name: "MovieList",
       component: MainPage,
-    },
-    {
-      path: "/:id",
-      component: DetailPage,
+      children: [
+        {
+          path: ":id",
+          name: "MovieDetail",
+          component: MovieDetail,
+        },
+      ],
     },
   ],
 });

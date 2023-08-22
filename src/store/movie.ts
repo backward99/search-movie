@@ -1,8 +1,5 @@
 import axios from "axios";
 import { defineStore } from "pinia";
-import { MOVIE_AND_API } from "~/utils/private_api_keys";
-
-export type Movies = Movie[];
 export interface Movie {
   Title: string;
   Year: string;
@@ -10,6 +7,8 @@ export interface Movie {
   Type: string;
   Poster: string;
 }
+
+export type Movies = Movie[];
 export interface MovieDetail {
   Title: string;
   Year: string;
@@ -41,56 +40,55 @@ export interface MovieDetail {
   Response: string;
 }
 
-const selectedMovie: MovieDetail = {
-  Title: "",
-  Year: "",
-  Rated: "",
-  Released: "",
-  Runtime: "",
-  Genre: "",
-  Director: "",
-  Writer: "",
-  Actors: "",
-  Plot: "",
-  Language: "",
-  Country: "",
-  Awards: "",
-  Poster: "",
-  Ratings: [
-    {
-      Source: "",
-      Value: "",
-    },
-  ],
-  Metascore: "",
-  imdbRating: "",
-  imdbVotes: "",
-  imdbID: "",
-  Type: "",
-  DVD: "",
-  BoxOffice: "",
-  Production: "",
-  Website: "",
-  Response: "",
-};
-
-export const useMovieStore = defineStore("movie", {
+export const useMovieStore = defineStore<
+  "movie",
+  { movies: Movies; selectedMovie: MovieDetail | null },
+  Record<string, never>,
+  {
+    fetchMovies(title: string): Promise<void>;
+    fetchMoviesDetail(imdbID: string): Promise<void>;
+  }
+>("movie", {
   state: () => ({
-    movies: [] as Movies,
-    selectedMovie,
+    movies: [],
+    selectedMovie: null,
   }),
   actions: {
-    async fetchMovies(path: string) {
-      const {
-        data: { Search },
-      } = await axios.get(`${MOVIE_AND_API}${path}`);
+    async fetchMovies(title: string) {
+      try {
+        const res = await axios.post("/api/movies/", { s: title });
+        if (res.status !== 200) {
+          throw new Error("store api호출 오류");
+        }
 
-      this.movies = Search;
+        const {
+          data: { Search },
+        } = res;
+
+        this.movies = Search;
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(error.message);
+        }
+      }
     },
-    async fetchMoviesDetail(path: string) {
-      const { data } = await axios.get(`${MOVIE_AND_API}${path}`);
+    async fetchMoviesDetail(imdbID: string) {
+      try {
+        const res = await axios.post("/api/movies/", {
+          i: imdbID,
+          plot: "full",
+        });
 
-      this.selectedMovie = data;
+        if (res.status !== 200) {
+          throw new Error("store api호출 오류");
+        }
+
+        this.selectedMovie = res.data;
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(error.message);
+        }
+      }
     },
   },
 });

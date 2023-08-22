@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import TheIcon from "~/components/TheIcon.vue";
 import { ref } from "vue";
-import { useMovieStore } from "~/store/movie";
-import { useRouter } from "vue-router";
 
-const movieStore = useMovieStore();
-const router = useRouter();
 const title = ref("");
+const emit = defineEmits<{
+  (e: "search", title: string): void;
+  (e: "reset"): void;
+}>();
+
+const searchMovies = () => {
+  emit("search", title.value);
+};
 
 const resetMovies = () => {
   title.value = "";
-  movieStore.$reset();
-  router.push("/");
-};
-const searchMovies = async () => {
-  const searchTitle = title.value;
-  resetMovies();
-  movieStore.fetchMovies(`&s=${searchTitle}`);
+  emit("reset");
 };
 </script>
 

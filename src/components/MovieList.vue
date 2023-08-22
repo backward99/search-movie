@@ -1,49 +1,53 @@
 <script setup lang="ts">
-import { useMovieStore } from "~/store/movie";
-import { useRouter } from "vue-router";
+import { Movie, MovieDetail } from "~/store/movie";
 import { ref } from "vue";
+import { Movies } from "~/store/movie";
 
 const hasTitle = ref(false);
-const movieStore = useMovieStore();
-const router = useRouter();
-const selectMovie = (event: Event) => {
-  const selectMovieEl = (event.target as HTMLElement).closest("li");
+const emit = defineEmits<{
+  (e: "selecte", title: string, imdbID: string): void;
+}>();
 
-  if (selectMovieEl && selectMovieEl.dataset.movie !== undefined) {
-    const selectedMovieInfo = JSON.parse(selectMovieEl.dataset.movie);
-    const { Title, imdbID } = selectedMovieInfo;
+defineProps<{
+  movies: Movies;
+  selectedMovie: MovieDetail | null;
+}>();
 
-    hasTitle.value = true;
-    movieStore.fetchMovies(`&s=${Title}`);
-    movieStore.fetchMoviesDetail(`&i=${imdbID}&plot=full`);
-    router.push(`/${imdbID}`);
-  }
+const selectMovie = ({ Title, imdbID }: Movie) => {
+  hasTitle.value = true;
+  emit("selecte", Title, imdbID);
 };
 </script>
 
 <template>
   <article class="c-movie">
+    <span
+      v-if="selectedMovie"
+      class="c-movie__hr" />
+    <h1
+      v-if="selectedMovie"
+      class="c-movie__similar-movies">
+      비슷한 영화
+    </h1>
     <ul class="c-movie__list">
       <li
-        v-for="movie in movieStore.movies"
+        v-for="movie in movies"
         :key="movie.imdbID"
-        :data-movie="JSON.stringify(movie)"
         class="c-movie__item"
-        @click="selectMovie">
+        @click="selectMovie(movie)">
         <img
           class="c-movie__poster"
-          :src="movie?.Poster"
-          alt="" />
+          :src="
+            movie?.Poster === 'N/A'
+              ? 'https://picsum.photos/200/300'
+              : movie?.Poster
+          "
+          :alt="movie?.Title" />
         <strong class="c-movie__title">{{ movie?.Title }}</strong>
         <span class="c-movie__year">{{ movie?.Year }}</span>
         <span class="c-movie__type">{{ movie?.Type }}</span>
       </li>
     </ul>
-    <button
-      v-if="hasTitle"
-      class="c-movie__more">
-      더 보기
-    </button>
   </article>
 </template>
 
@@ -52,6 +56,18 @@ const selectMovie = (event: Event) => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 2rem;
+  &__hr {
+    width: 90%;
+    margin-bottom: 2rem;
+    border-top: 1px solid rgb(188, 188, 188, 0.5);
+  }
+  &__similar-movies {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    color: black;
+    font-weight: bold;
+  }
   &__list {
     width: 100%;
     max-width: 1300px;

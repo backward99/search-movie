@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { useMovieStore } from "~/store/movie";
+import { MovieDetail } from "~/store/movie";
 
-const movieStore = useMovieStore();
 const movieInfoTopics = {
   Year: "개봉일",
   Runtime: "영화 길이",
@@ -14,27 +13,29 @@ const movieInfoTopics = {
   Awards: "수상 경력",
   Type: "유형",
 };
+
+defineProps<{ selectedMovie: MovieDetail }>();
 </script>
 
 <template>
-  <article
-    v-if="movieStore.selectedMovie.Poster"
-    class="c-detail">
+  <article class="c-detail">
     <img
       class="c-detail__poster"
-      :src="movieStore.selectedMovie?.Poster"
+      :src="
+        selectedMovie?.Poster === 'N/A'
+          ? 'https://picsum.photos/200/300'
+          : selectedMovie?.Poster
+      "
       alt="" />
     <section class="l-detail">
-      <h2 class="c-detail__title">{{ movieStore.selectedMovie?.Title }}</h2>
-      <p class="c-detail__plot">{{ movieStore.selectedMovie?.Plot }}</p>
+      <h2 class="c-detail__title">{{ selectedMovie?.Title }}</h2>
+      <p class="c-detail__plot">{{ selectedMovie?.Plot }}</p>
       <section class="l-detail">
         <template
           v-for="(value, key) in movieInfoTopics"
           :key="key">
           <span class="c-detail__info">{{ value }}</span>
-          <span class="c-detail__info">{{
-            movieStore.selectedMovie[key]
-          }}</span>
+          <span class="c-detail__info">{{ selectedMovie[key] }}</span>
         </template>
       </section>
     </section>
@@ -43,6 +44,7 @@ const movieInfoTopics = {
 
 <style lang="scss">
 .c-detail {
+  padding: 0 1rem;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -50,6 +52,9 @@ const movieInfoTopics = {
   max-width: 1300px;
   margin: 0 auto 2rem auto;
   &__poster {
+    margin-bottom: 0.5rem;
+    aspect-ratio: 1/1.4;
+    object-fit: cover;
     margin-right: 1rem;
     border-radius: 0.5rem;
   }
@@ -59,6 +64,7 @@ const movieInfoTopics = {
     margin-bottom: 2rem;
   }
   &__plot {
+    box-sizing: border-box;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
