@@ -16,7 +16,6 @@ export default async function (
   // const { data } = await axios(API_END_POINT as string, {
   //   params: { apikey: API_KEY, ...request.body },
   // });
-
   const { data } = await axiosInstance({
     params: { ...request.body },
   });
